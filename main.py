@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 
 
 def get_clean_data():
-    df = pd.read_csv('./data/cancer-diagnosis.csv')
-    df = df.drop(['Unnamed: 32', 'id'], axis=1)
+    df = pd.read_csv('./data/data.csv')
+    df = df.drop(['id'], axis=1)
     df['diagnosis'] = df['diagnosis'].map({'M': 1, 'B': 0})
     return df
 
