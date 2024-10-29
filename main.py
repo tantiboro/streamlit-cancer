@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import streamlit as st
 
 def get_clean_data():
     df = pd.read_csv('./data/data.csv')
@@ -106,7 +106,7 @@ def create_radar_chart(input_data):
 
 
 def create_input_form(data):
-    import streamlit as st
+    
 
     st.sidebar.header("Cell Nuclei Details")
     slider_labels = [("Radius (mean)", "radius_mean"), ("Texture (mean)", "texture_mean"),
@@ -191,6 +191,7 @@ def display_predictions(input_data, model, scaler):
 
 def create_app():
     import streamlit as st
+    
 
     st.set_page_config(page_title="Breast Cancer Diagnosis",
                        page_icon=":female-doctor:", layout="wide", initial_sidebar_state="expanded")
