@@ -1,6 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
+import plotly
+import plotly.graph_objects as go
 
 def get_clean_data():
     df = pd.read_csv('./data/data.csv')
@@ -8,14 +10,34 @@ def get_clean_data():
     df['diagnosis'] = df['diagnosis'].map({'M': 1, 'B': 0})
     return df
 
-
 def plot_data(df):
-    plot = df['diagnosis'].value_counts().plot(
-        kind='bar', title="Class distributions \n(0: Benign | 1: Malignant)")
-    plot.set_xlabel("Diagnosis")
-    plot.set_ylabel("Frequency")
-    plt.show()
+    fig = go.Figure(data=go.Splom(
+                  dimensions=[dict(label='Pregnancies', values=df['radius_mean']),
+                              dict(label='Glucose', values=df['radius_mean']),
+                              dict(label='BloodPressure', values=df['texture_mean']),
+                              dict(label='SkinThickness', values=df['texture_mean']),
+                              dict(label='Insulin', values=df['symmetry_mean']),
+                              dict(label='BMI', values=df['symmetry_mean']),
+                              dict(label='DiabPedigreeFun', values=df['smoothness_se']),
+                              dict(label='Age', values=df['smoothness_se'])],
+                  marker=dict(color=df['diagnosis'],
+                              size=5,
+                              colorscale='Bluered',
+                              line=dict(width=0.5,
+                                        color='rgb(230,230,230)')),
+                  #text=textd,
+                  diagonal=dict(visible=False)))
 
+    title = "Scatterplot Matrix (SPLOM) for Diabetes Dataset<br>Data source:"+\
+        " <a href='https://www.kaggle.com/uciml/pima-indians-diabetes-database/data'>[1]</a>"
+    fig.update_layout(title=title,
+                  dragmode='select',
+                  width=1000,
+                  height=1000,
+                  hovermode='closest')
+
+    return fig
+    
 
 def get_model():
     from sklearn.model_selection import train_test_split
@@ -47,10 +69,8 @@ def get_model():
 
 def create_radar_chart(input_data):
 
-    import plotly.graph_objects as go
-    
     input_data = get_scaled_values_dict(input_data)
-
+    
     fig = go.Figure()
 
     fig.add_trace(
@@ -101,7 +121,7 @@ def create_radar_chart(input_data):
         showlegend=True,
         autosize=True
     )
-
+    
     return fig
 
 
@@ -207,10 +227,12 @@ def create_app():
 
     data = get_clean_data()
     input_data = create_input_form(data)
-
+    df = get_clean_data()
     model, scaler = get_model()
-    col1, col2 = st.columns([4, 1])
-
+    
+    col1, col2, col3= st.columns([1, 1, 3])
+    
+    
     with col1:
         radar_chart = create_radar_chart(input_data)
         st.plotly_chart(radar_chart, use_container_width=True)
@@ -218,10 +240,14 @@ def create_app():
     with col2:
         # load the model
         display_predictions(input_data, model, scaler)
+        
+    with col3:
+        plolty_plot = plot_data(df)
+        st.plotly_chart(plolty_plot, use_container_width=True)
 
 
 def main():
-    # EDA
+    #EDA
     # df = get_clean_data()
     # plot_data(df)
 
