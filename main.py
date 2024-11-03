@@ -12,14 +12,18 @@ def get_clean_data():
 
 def plot_data(df):
     fig = go.Figure(data=go.Splom(
-                  dimensions=[dict(label='Pregnancies', values=df['radius_mean']),
-                              dict(label='Glucose', values=df['radius_mean']),
-                              dict(label='BloodPressure', values=df['texture_mean']),
-                              dict(label='SkinThickness', values=df['texture_mean']),
-                              dict(label='Insulin', values=df['symmetry_mean']),
-                              dict(label='BMI', values=df['symmetry_mean']),
-                              dict(label='DiabPedigreeFun', values=df['smoothness_se']),
-                              dict(label='Age', values=df['smoothness_se'])],
+                  dimensions=[dict(label='Radius (mean)', values=df['radius_mean']),
+                              dict(label='Texture (mean)', values=df['texture_mean']),
+                              dict(label='Perimeter (mean)', values=df['perimeter_mean']),
+                              dict(label='Area (mean)', values=df['area_mean']),
+                              dict(label='Smoothness (mean)', values=df['smoothness_mean']),
+                              dict(label='Compactness (mean)', values=df['compactness_mean']),
+                              dict(label='Concavity', values=df['concavity_mean']),
+                              dict(label='Concavity Points (mean)', values=df['concave points_mean']),
+                              dict(label='Symmetry (mean)', values=df['symmetry_mean']),
+                              dict(label='Fractal dimension (mean)', values=df['fractal_dimension_mean'])],
+                  
+                  showupperhalf=False,
                   marker=dict(color=df['diagnosis'],
                               size=5,
                               colorscale='Bluered',
@@ -32,7 +36,7 @@ def plot_data(df):
         " <a href='https://www.kaggle.com/uciml/pima-indians-diabetes-database/data'>[1]</a>"
     fig.update_layout(title=title,
                   dragmode='select',
-                  width=1000,
+                  width=1200,
                   height=1000,
                   hovermode='closest')
 
@@ -230,20 +234,23 @@ def create_app():
     df = get_clean_data()
     model, scaler = get_model()
     
-    col1, col2, col3= st.columns([1, 1, 3])
+    col1, col2= st.columns([2, 1])
+    col3, col4 = st.columns([4,1])
     
-    
-    with col1:
-        radar_chart = create_radar_chart(input_data)
-        st.plotly_chart(radar_chart, use_container_width=True)
+    with st.container():
+        with col1:
+            radar_chart = create_radar_chart(input_data)
+            st.plotly_chart(radar_chart, use_container_width=True)
 
-    with col2:
-        # load the model
-        display_predictions(input_data, model, scaler)
-        
-    with col3:
-        plolty_plot = plot_data(df)
-        st.plotly_chart(plolty_plot, use_container_width=True)
+        with col2:
+            # load the model
+            display_predictions(input_data, model, scaler)
+    with st.container():   
+        with col3:
+            plolty_plot = plot_data(df)
+            st.plotly_chart(plolty_plot, use_container_width=True)
+        with col4:
+            st.title("Scatterplot matrix")
 
 
 def main():
